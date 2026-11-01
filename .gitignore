@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build
+.next/
+out/
+build/
+dist/
+
+# Local database / demo state (reset on clean clone)
+.data/
+
+# Environment files
+.env*.local
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.server.log
+*.log
+
+# Editor & OS files
+.DS_Store
+*.pem
+Thumbs.db
+
+# Preview screenshots & scrap
+preview-*.png
+*.tmp
+OneDrive_2026-10-20/

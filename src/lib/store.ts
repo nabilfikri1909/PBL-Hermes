@@ -1,0 +1,184 @@
+import "server-only";
+import fs from "node:fs";
+import path from "node:path";
+import crypto from "node:crypto";
+import type {
+  Announcement,
+  Application,
+  AuditEntry,
+  DocumentTemplate,
+  FaqItem,
+  HelpTicket,
+  Role,
+  User
+} from "./types";
+import { SEED_ANNOUNCEMENTS, SEED_APPLICATIONS, SEED_AUDIT, SEED_FAQS, SEED_SETTINGS, SEED_TEMPLATES, SEED_TICKETS } from "./seed";
+
+export interface StoreSettings {
+  quotaOutbound: number;
+  quotaInbound: number;
+  quotaPdln: number;
+  openOutbound: boolean;
+  openInbound: boolean;
+  openPdln: boolean;
+  verificationSlaDays: number;
+  announcementBanner: string;
+}
+
+export interface Store {
+  users: (User & { password?: string })[];
+  applications: Application[];
+  audit: AuditEntry[];
+  faqs: FaqItem[];
+  announcements: Announcement[];
+  templates: DocumentTemplate[];
+  tickets: HelpTicket[];
+  settings: StoreSettings;
+}
+
+const DATA_DIR = path.join(process.cwd(), ".data");
+const DATA_FILE = path.join(DATA_DIR, "store.json");
+
+/** globalThis survives HMR in dev and route-module isolation in prod. */
+const globalRef = globalThis as unknown as { __pnjStore?: Store };
+
+function emptyStore(): Store {
+  return {
+    users: [],
+    applications: SEED_APPLICATIONS.map((app) => ({ ...app })),
+    audit: [...SEED_AUDIT],
+    faqs: [...SEED_FAQS],
+    announcements: [...SEED_ANNOUNCEMENTS],
+    templates: [...SEED_TEMPLATES],
+    tickets: [...SEED_TICKETS],
+    settings: { ...SEED_SETTINGS }
+  };
+}
+
+export function uid(prefix = "id") {
+  return `${prefix}_${crypto.randomBytes(6).toString("hex")}`;
+}
+
+export function nowISO() {
+  return new Date().toISOString();
+}
+
+function readFromDisk(): Store | null {
+  try {
+    if (!fs.existsSync(DATA_FILE)) return null;
+    const raw = fs.readFileSync(DATA_FILE, "utf8");
+    if (!raw.trim()) return null;
+    const parsed = JSON.parse(raw) as Partial<Store>;
+    const base = emptyStore();
+    return {
+      users: parsed.users ?? base.users,
+      applications: parsed.applications ?? base.applications,
+      audit: parsed.audit ?? base.audit,
+      faqs: parsed.faqs ?? base.faqs,
+      announcements: parsed.announcements ?? base.announcements,
+      templates: parsed.templates ?? base.templates,
+      tickets: parsed.tickets ?? base.tickets,
+      settings: { ...base.settings, ...(parsed.settings ?? {}) }
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function getStore(): Store {
+  if (!globalRef.__pnjStore) {
+    globalRef.__pnjStore = readFromDisk() ?? emptyStore();
+    // Seed demo accounts once so the live demo is always reachable.
+    if (globalRef.__pnjStore.users.length === 0) {
+      globalRef.__pnjStore.users = demoUsers();
+      persist();
+    }
+  }
+  return globalRef.__pnjStore;
+}
+
+export function persist() {
+  const store = globalRef.__pnjStore;
+  if (!store) return;
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+    fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2), "utf8");
+  } catch {
+    /* Read-only filesystem: the in-memory store still serves the demo. */
+  }
+}
+
+/** Mutate and flush in one call — the only write path in the app. */
+export function mutate<T>(fn: (store: Store) => T): T {
+  const store = getStore();
+  const result = fn(store);
+  persist();
+  return result;
+}
+
+/* ── Demo identities ──────────────────────────────────────────── */
+
+function demoUsers(): (User & { password?: string })[] {
+  const created = "2026-01-12T08:00:00.000Z";
+  const rows: Array<[string, string, Role, string, string]> = [
+    ["Muhammad Nabil Fikri", "nabil@student.pnj.ac.id", "student", "2207421021", "Teknik Informatika"],
+    ["Ayu Larasati", "ayu@student.pnj.ac.id", "student", "2207421044", "Administrasi Bisnis"],
+    ["Dr. Bagus Prakoso", "bagus@pnj.ac.id", "lecturer", "198403122010121002", "Teknik Mesin"],
+    ["Rina Kartika, M.I.Kom", "rina@kui.pnj.ac.id", "admin", "199001152015032004", "Kantor Urusan Internasional"],
+    ["Hendra Wijaya, S.Kom", "hendra@kui.pnj.ac.id", "super_admin", "198711202012011003", "Kantor Urusan Internasional"],
+    ["Emma Lindqvist", "emma@lund.se", "foreign", "LUND-2026-0117", "Lund University"]
+  ];
+  return rows.map(([fullName, email, role, nim, department], i) => ({
+    id: `usr_${i + 1}`,
+    fullName,
+    email,
+    role,
+    nim,
+    department,
+    studyProgram: department,
+    phone: `+62 812 0000 00${i + 1}`,
+    nationality: role === "foreign" ? "Swedia" : "Indonesia",
+    avatarInitials: fullName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p) => p[0]!.toUpperCase())
+      .join(""),
+    createdAt: created,
+    password: role.startsWith("super") || role === "admin" ? "admin123" : "demo123"
+  }));
+}
+
+export function findUserByEmail(email: string) {
+  const target = email.trim().toLowerCase();
+  return getStore().users.find((u) => u.email.toLowerCase() === target) ?? null;
+}
+
+export function findUserById(id: string) {
+  return getStore().users.find((u) => u.id === id) ?? null;
+}
+
+export function addAudit(entry: Omit<AuditEntry, "id" | "at">) {
+  mutate((store) => {
+    store.audit.unshift({ id: uid("aud"), at: nowISO(), ...entry });
+    store.audit = store.audit.slice(0, 400);
+  });
+}
+
+/* ── Application helpers ──────────────────────────────────────── */
+
+export function nextRegisterNo(service: string) {
+  const store = getStore();
+  const year = new Date().getFullYear();
+  const prefix = service === "outbound" ? "OTB" : service === "inbound" ? "INB" : "PDLN";
+  const count = store.applications.filter((a) => a.service === service).length + 1;
+  return `${prefix}/PNJ-KUI/${year}/${String(count).padStart(3, "0")}`;
+}
+
+export function listApplications() {
+  return [...getStore().applications].sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
+}
+
+export function getApplicationById(id: string) {
+  return getStore().applications.find((a) => a.id === id) ?? null;
+}
