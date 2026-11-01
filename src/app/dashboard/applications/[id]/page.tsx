@@ -83,8 +83,8 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
         </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[1.5fr_1fr]">
+        <div className="min-w-0 space-y-5">
           <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)] sm:p-6">
             <p className="text-[0.9375rem] font-bold text-ink">Ringkasan berkas</p>
             <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -167,7 +167,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
           ) : null}
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
             <p className="text-[0.9375rem] font-bold text-ink">Linimasa berkas</p>
             <div className="mt-4">

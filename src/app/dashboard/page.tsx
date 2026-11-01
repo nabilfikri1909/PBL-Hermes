@@ -67,8 +67,8 @@ export default async function DashboardPage() {
         })}
       </div>
 
-      <div className="mt-6 grid gap-5 xl:grid-cols-[1.55fr_1fr]">
-        <div className="space-y-5">
+      <div className="mt-6 grid min-w-0 gap-5 xl:grid-cols-[1.55fr_1fr]">
+        <div className="min-w-0 space-y-5">
           <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
             <div className="flex items-center justify-between gap-3">
               <p className="text-[0.9375rem] font-bold text-ink">Pengajuan aktif</p>
@@ -111,13 +111,13 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <section>
+          <section className="min-w-0">
             <p className="mb-3 text-[0.9375rem] font-bold text-ink">Semua pengajuan saya</p>
             <ApplicationList rows={rows} />
           </section>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <section className="rounded-card-lg bg-forest-900 p-5 text-white">
             <p className="flex items-center gap-2 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-mint-300">
               <PlaneTakeoff className="size-3.5" />

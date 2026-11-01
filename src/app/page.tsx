@@ -138,24 +138,24 @@ export default async function LandingPage() {
               </BtnLink>
             </div>
 
-            <dl className="mt-12 grid grid-cols-3 gap-4 border-t border-white/15 pt-6 animate-rise" style={{ animationDelay: "340ms" }}>
+            <dl className="mt-10 sm:mt-12 grid grid-cols-3 gap-2.5 sm:gap-4 border-t border-white/15 pt-5 sm:pt-6 animate-rise" style={{ animationDelay: "340ms" }}>
               <div>
-                <dd className="text-2xl font-bold text-white">
+                <dd className="text-xl sm:text-2xl font-bold text-white">
                   <Counter to={36} suffix=" Prodi" />
                 </dd>
-                <dt className="mt-1.5 text-[0.8125rem] leading-snug text-mint-200/90">Pendidikan vokasi PNJ</dt>
+                <dt className="mt-1 text-[0.6875rem] sm:text-[0.8125rem] leading-snug text-mint-200/90">Pendidikan vokasi</dt>
               </div>
               <div>
-                <dd className="text-2xl font-bold text-white">
+                <dd className="text-xl sm:text-2xl font-bold text-white">
                   <Counter to={7} suffix=" Jurusan" />
                 </dd>
-                <dt className="mt-1.5 text-[0.8125rem] leading-snug text-mint-200/90">Rekayasa & tata niaga</dt>
+                <dt className="mt-1 text-[0.6875rem] sm:text-[0.8125rem] leading-snug text-mint-200/90">Rekayasa & tata niaga</dt>
               </div>
               <div>
-                <dd className="text-2xl font-bold text-white">
+                <dd className="text-xl sm:text-2xl font-bold text-white">
                   <Counter to={store.settings.verificationSlaDays} suffix=" hari" />
                 </dd>
-                <dt className="mt-1.5 text-[0.8125rem] leading-snug text-mint-200/90">SLA verifikasi KUI</dt>
+                <dt className="mt-1 text-[0.6875rem] sm:text-[0.8125rem] leading-snug text-mint-200/90">SLA verifikasi KUI</dt>
               </div>
             </dl>
           </div>

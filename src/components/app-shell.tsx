@@ -127,7 +127,7 @@ export function AppShell({
   );
 
   return (
-    <div className="flex min-h-dvh bg-canvas-soft">
+    <div className="flex min-h-dvh overflow-x-clip bg-canvas-soft">
       <aside className="sticky top-0 hidden h-dvh w-[16.5rem] shrink-0 border-r border-hairline bg-white lg:block">{sidebar}</aside>
 
       {open ? (
@@ -137,7 +137,7 @@ export function AppShell({
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-x-clip">
         <header className="sticky top-0 z-30 border-b border-hairline bg-white/90 backdrop-blur-md">
           <div className="flex items-center gap-3 px-4 py-3.5 sm:px-6">
             <button
@@ -174,7 +174,7 @@ export function AppShell({
           {subtitle ? <p className="px-4 pb-3 text-[0.75rem] text-ink-mute sm:px-6">{subtitle}</p> : null}
         </header>
 
-        <main className="mx-auto w-full max-w-[80rem] flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+        <main className="mx-auto w-full max-w-[80rem] min-w-0 flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </div>
     </div>
   );

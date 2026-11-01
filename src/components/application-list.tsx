@@ -60,7 +60,7 @@ export function ApplicationList({
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2.5">
-        <label className="relative min-w-[15rem] flex-1">
+        <label className="relative min-w-0 w-full flex-1 sm:w-auto sm:min-w-[15rem]">
           <Search className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-mute" />
           <input
             value={query}
@@ -70,39 +70,41 @@ export function ApplicationList({
           />
         </label>
 
-        <select
-          value={service}
-          onChange={(e) => setService(e.target.value as typeof service)}
-          aria-label="Filter layanan"
-          className="h-10 rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft focus:outline-none"
-        >
-          <option value="all">Semua layanan</option>
-          <option value="outbound">Outbound</option>
-          <option value="inbound">Inbound</option>
-          <option value="pdln">PDLN</option>
-        </select>
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          <select
+            value={service}
+            onChange={(e) => setService(e.target.value as typeof service)}
+            aria-label="Filter layanan"
+            className="h-10 flex-1 rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft focus:outline-none sm:flex-none"
+          >
+            <option value="all">Semua layanan</option>
+            <option value="outbound">Outbound</option>
+            <option value="inbound">Inbound</option>
+            <option value="pdln">PDLN</option>
+          </select>
 
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as typeof status)}
-          aria-label="Filter status"
-          className="h-10 rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft focus:outline-none"
-        >
-          <option value="all">Semua status</option>
-          {STATUS_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {STATUS_META[option].label}
-            </option>
-          ))}
-        </select>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as typeof status)}
+            aria-label="Filter status"
+            className="h-10 flex-1 rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft focus:outline-none sm:flex-none"
+          >
+            <option value="all">Semua status</option>
+            {STATUS_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {STATUS_META[option].label}
+              </option>
+            ))}
+          </select>
 
-        <button
-          type="button"
-          onClick={() => setSort((s) => (s === "newest" ? "oldest" : "newest"))}
-          className="h-10 rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft transition-colors hover:border-forest-300"
-        >
-          {sort === "newest" ? "Terbaru dahulu" : "Terlama dahulu"}
-        </button>
+          <button
+            type="button"
+            onClick={() => setSort((s) => (s === "newest" ? "oldest" : "newest"))}
+            className="h-10 w-full rounded-full border border-hairline bg-white px-3.5 text-[0.8125rem] font-medium text-ink-soft transition-colors hover:border-forest-300 sm:w-auto"
+          >
+            {sort === "newest" ? "Terbaru dahulu" : "Terlama dahulu"}
+          </button>
+        </div>
       </div>
 
       <p className="mt-4 text-[0.75rem] text-ink-mute">

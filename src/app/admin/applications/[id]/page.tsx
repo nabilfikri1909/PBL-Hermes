@@ -61,8 +61,8 @@ export default async function AdminVerifyPage({ params }: { params: Promise<{ id
         Kembali ke daftar pengajuan
       </Link>
 
-      <div className="grid gap-5 xl:grid-cols-[1.55fr_1fr]">
-        <div className="space-y-5">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[1.55fr_1fr]">
+        <div className="min-w-0 space-y-5">
           <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)] sm:p-6">
             <p className="text-[0.9375rem] font-bold text-ink">Data pemohon</p>
             <dl className="mt-4 grid gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -155,7 +155,7 @@ export default async function AdminVerifyPage({ params }: { params: Promise<{ id
           </section>
         </div>
 
-        <div className="space-y-5">
+        <div className="min-w-0 space-y-5">
           <VerifyPanel app={app} role={user.role} />
           <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
             <p className="text-[0.9375rem] font-bold text-ink">Linimasa</p>

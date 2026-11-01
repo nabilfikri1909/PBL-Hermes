@@ -57,8 +57,8 @@ export default async function AdminHome() {
         })}
       </div>
 
-      <div className="mt-6 grid gap-5 xl:grid-cols-[1.5fr_1fr]">
-        <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
+      <div className="mt-6 grid min-w-0 gap-5 xl:grid-cols-[1.5fr_1fr]">
+        <section className="min-w-0 rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[0.9375rem] font-bold text-ink">Volume pengajuan 6 bulan</p>
@@ -73,7 +73,7 @@ export default async function AdminHome() {
           </div>
         </section>
 
-        <section className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
+        <section className="min-w-0 rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
           <p className="text-[0.9375rem] font-bold text-ink">Antrean per layanan</p>
           <div className="mt-4 space-y-2.5">
             {(["outbound", "inbound", "pdln"] as const).map((service) => {

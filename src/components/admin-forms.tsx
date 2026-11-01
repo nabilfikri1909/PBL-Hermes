@@ -91,8 +91,8 @@ export function AnnouncementManager({ rows }: { rows: Announcement[] }) {
   };
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.25fr_1fr]">
-      <div className="space-y-3">
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[1.25fr_1fr]">
+      <div className="min-w-0 space-y-3">
         {rows.map((row) => (
           <article key={row.id} className="rounded-card bg-white p-4 shadow-[0_14px_34px_-34px_rgb(13_26_21_/_0.5)]">
             <div className="flex flex-wrap items-center gap-2 text-[0.6875rem] text-ink-mute">
@@ -198,8 +198,8 @@ export function FaqManager({ rows }: { rows: FaqItem[] }) {
   };
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[1.25fr_1fr]">
-      <div className="divide-y divide-hairline rounded-card-lg bg-white p-2 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[1.25fr_1fr]">
+      <div className="min-w-0 divide-y divide-hairline rounded-card-lg bg-white p-2 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
         {rows.map((row) => (
           <div key={row.id} className="p-4">
             <div className="flex items-center gap-2 text-[0.6875rem] text-ink-mute">

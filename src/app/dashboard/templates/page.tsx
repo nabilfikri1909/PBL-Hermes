@@ -28,9 +28,9 @@ export default async function DashboardTemplatesPage() {
     >
       <div className="space-y-8">
         {(["outbound", "inbound", "pdln"] as const).map((service) => (
-          <section key={service}>
+          <section key={service} className="min-w-0">
             <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-forest-700">{SERVICE_META[service].short}</p>
-            <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="mt-3 grid min-w-0 gap-3 md:grid-cols-2">
               {templates
                 .filter((t) => t.service === service)
                 .map((template) => {
@@ -39,7 +39,7 @@ export default async function DashboardTemplatesPage() {
                     <a
                       key={template.id}
                       href={`/api/files?id=${template.id}`}
-                      className="group flex items-start gap-3.5 rounded-card bg-white p-4 shadow-[0_14px_34px_-34px_rgb(13_26_21_/_0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_-34px_rgb(13_26_21_/_0.5)]"
+                      className="group flex min-w-0 items-start gap-3.5 rounded-card bg-white p-4 shadow-[0_14px_34px_-34px_rgb(13_26_21_/_0.5)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_44px_-34px_rgb(13_26_21_/_0.5)]"
                     >
                       <span className="grid size-9 shrink-0 place-items-center rounded-full bg-canvas-soft text-forest-800 transition-colors group-hover:bg-forest-900 group-hover:text-white">
                         <Icon className="size-4" strokeWidth={1.8} />
