@@ -124,6 +124,12 @@ function emptyStore(): Store {
   };
 }
 
+/** Copy of the demo announcement corpus, used to refresh a store whose CMS
+ *  content predates the current seed (e.g. an older .data on the server). */
+function seedAnnouncementText() {
+  return new Map(SEED_ANNOUNCEMENTS.map((a) => [a.id, a]));
+}
+
 export function uid(prefix = "id") {
   return `${prefix}_${crypto.randomBytes(6).toString("hex")}`;
 }
@@ -180,6 +186,7 @@ function rebaseIfStale(store: Store): { store: Store; changed: boolean } {
   if (delta <= 0) return { store, changed: false };
 
   const year = new Date().getFullYear();
+  const seedAnn = seedAnnouncementText();
   return {
     changed: true,
     store: {
@@ -188,9 +195,20 @@ function rebaseIfStale(store: Store): { store: Store; changed: boolean } {
         ...app,
         registerNo: app.registerNo.replace(/(PNJ-KUI\/)\d{4}(\/)/, `$1${year}$2`)
       })),
-      announcements: shiftDates(store.announcements, delta),
+      /* Demo announcements are editorial copy, not user data: take the current
+         wording (dates inside the text would otherwise stay stale) but keep the
+         rebased publish timestamps and the admin's pinned/edited state. */
+      announcements: shiftDates(store.announcements, delta).map((a) => {
+        const fresh = seedAnn.get(a.id);
+        return fresh ? { ...fresh, publishedAt: a.publishedAt, pinned: a.pinned } : a;
+      }),
       tickets: shiftDates(store.tickets, delta),
-      audit: shiftDates(store.audit, delta)
+      audit: shiftDates(store.audit, delta),
+      /* The banner is seeded editorial copy too: refresh wording when it still
+         carries an absolute date, but never overwrite an admin's own edit. */
+      settings: /\b20\d{2}\b/.test(store.settings.announcementBanner ?? "")
+        ? { ...store.settings, announcementBanner: SEED_SETTINGS.announcementBanner }
+        : store.settings
     }
   };
 }
