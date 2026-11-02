@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, CheckCircle2, Loader2, Send, ShieldCheck, Stamp } from "lucide-react";
 import { toast } from "sonner";
 import { Btn, FieldLabel, inputClass, selectClass, textareaClass } from "./ui";
-import { cn, formatDate, SERVICE_META } from "@/lib/utils";
+import { cn, formatDate, SERVICE_META, STATUS_META } from "@/lib/utils";
 import type { Application, ApplicationStatus, Role } from "@/lib/types";
 import { availableVerdicts, type Verdict } from "@/lib/workflow";
 
@@ -37,7 +37,8 @@ export function VerifyPanel({ app, role }: { app: Application; role: Role }) {
         setBusy(null);
         return;
       }
-      toast.success(`Status berkas kini: ${payload.status}.`);
+      const nextLabel = payload.status ? STATUS_META[payload.status]?.label ?? payload.status : "diperbarui";
+      toast.success(`Status berkas kini: ${nextLabel}.`);
       setNote("");
       router.refresh();
       setBusy(null);

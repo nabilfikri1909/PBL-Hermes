@@ -46,7 +46,11 @@ export function StatusTimeline({ app }: { app: Application }) {
             <div className="min-w-0 pt-0.5">
               <p className={cn("text-[0.8125rem] font-semibold", active ? "text-ink" : done ? "text-ink-soft" : "text-ink-mute")}>
                 {step.label}
-                {active ? <span className="ml-2 rounded-full bg-forest-50 px-2 py-0.5 text-[0.625rem] font-semibold text-forest-800">Sedang di sini</span> : null}
+                {active ? (
+                  <span className="ml-2 rounded-full bg-forest-50 px-2 py-0.5 text-[0.625rem] font-semibold text-forest-800">
+                    {revision ? "Menunggu perbaikan Anda" : "Sedang di sini"}
+                  </span>
+                ) : null}
               </p>
               <p className="mt-0.5 text-[0.75rem] leading-relaxed text-ink-mute">{step.body}</p>
             </div>
