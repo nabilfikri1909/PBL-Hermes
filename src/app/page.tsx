@@ -53,7 +53,6 @@ const PILLARS = [
   {
     href: "/outbound",
     image: PHOTOS.takeoff,
-    tag: "Untuk mahasiswa PNJ",
     title: "Outbound Mobility",
     body: "Exchange, magang internasional, IISMA, joint degree, dan short course — lengkap dengan surat rekomendasi paspor serta visa.",
     meta: "Surat Rekomendasi KUI"
@@ -61,7 +60,6 @@ const PILLARS = [
   {
     href: "/inbound",
     image: PHOTOS.collaboration,
-    tag: "Untuk mahasiswa asing",
     title: "Inbound International",
     body: "Pendaftaran mahasiswa dan peneliti asing, kliring visa, hingga penerbitan Letter of Acceptance ber-barcode dan e-Certificate.",
     meta: "Letter of Acceptance PNJ"
@@ -69,7 +67,6 @@ const PILLARS = [
   {
     href: "/pdln",
     image: PHOTOS.meeting,
-    tag: "Untuk dosen & tendik",
     title: "Perjalanan Dinas Luar Negeri",
     body: "Izin dinas kenegaraan sesuai Permensesneg No. 5/2017, penerusan berkas ke Kemensetneg, dan pelaporan biaya riil per peserta.",
     meta: "SP Setneg & SPTJM"
@@ -277,9 +274,6 @@ export default async function LandingPage() {
                       <img src={photo(pillar.image, 900)} alt={pillar.title} className="size-full object-cover transition-transform duration-[900ms] group-hover:scale-[1.06]" loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-forest-950/55 via-transparent to-transparent" />
                       <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-[1100ms] group-hover:translate-x-full" />
-                      <span className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-[0.6875rem] font-semibold text-forest-900 backdrop-blur-sm">
-                        {pillar.tag}
-                      </span>
                     </div>
                     <div className="p-6">
                       <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-forest-600">{pillar.meta}</p>
