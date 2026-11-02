@@ -69,19 +69,23 @@ function collectDates(value: unknown, out: number[] = [], key = ""): number[] {
   return out;
 }
 
-function shiftDates<T>(value: T, deltaMs: number): T {
+/** Shift ISO dates by `deltaMs`. When `cutoff` is given, values newer than the
+ *  cutoff are left untouched: an edit made today must not be pushed into the
+ *  future by a rebase that targets month-old seed data. */
+function shiftDates<T>(value: T, deltaMs: number, cutoff?: number): T {
   if (typeof value === "string") {
     if (!ISO_DATE.test(value)) return value;
     const original = new Date(value);
     if (Number.isNaN(original.getTime())) return value;
+    if (cutoff !== undefined && original.getTime() > cutoff) return value;
     const shifted = new Date(original.getTime() + deltaMs);
     // Date-only strings stay date-only; timestamps keep their time-of-day.
     return (value.includes("T") ? shifted.toISOString() : shifted.toISOString().slice(0, 10)) as unknown as T;
   }
-  if (Array.isArray(value)) return value.map((v) => shiftDates(v, deltaMs)) as unknown as T;
+  if (Array.isArray(value)) return value.map((v) => shiftDates(v, deltaMs, cutoff)) as unknown as T;
   if (value && typeof value === "object") {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = shiftDates(v, deltaMs);
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = shiftDates(v, deltaMs, cutoff);
     return out as unknown as T;
   }
   return value;
@@ -130,6 +134,40 @@ function seedAnnouncementText() {
   return new Map(SEED_ANNOUNCEMENTS.map((a) => [a.id, a]));
 }
 
+/** Ids that belong to the shipped demo dataset. Only these anchor staleness:
+ *  audit rows and drafts created while testing must never make a store that is
+ *  full of February records look "fresh". */
+const SEED_APP_IDS = new Set(SEED_APPLICATIONS.map((a) => a.id));
+const SEED_ANN_IDS = new Set(SEED_ANNOUNCEMENTS.map((a) => a.id));
+
+/** `createdAt` is immutable, so opening and autosaving a demo draft (which bumps
+ *  `updatedAt` to today) cannot mask a dataset that is months old. */
+function demoAnchors(store: Store): number[] {
+  const out: number[] = [];
+  const push = (value: string | null | undefined) => {
+    if (!value) return;
+    const t = new Date(value).getTime();
+    if (!Number.isNaN(t)) out.push(t);
+  };
+  store.applications.forEach((a) => {
+    if (SEED_APP_IDS.has(a.id)) push(a.createdAt);
+  });
+  store.announcements.forEach((a) => {
+    if (SEED_ANN_IDS.has(a.id)) push(a.publishedAt);
+  });
+  return out;
+}
+
+/** Offset that lands the newest demo record on today (midday). */
+function demoAnchorOffset(store: Store): number {
+  const anchors = demoAnchors(store);
+  if (!anchors.length) return 0;
+  const newest = Math.max(...anchors);
+  const target = new Date();
+  target.setHours(12, 0, 0, 0);
+  return target.getTime() - newest;
+}
+
 export function uid(prefix = "id") {
   return `${prefix}_${crypto.randomBytes(6).toString("hex")}`;
 }
@@ -163,47 +201,45 @@ function readFromDisk(): { store: Store; migrated: boolean } | null {
 }
 
 /** A store written months ago makes the demo look abandoned: empty chart,
- *  queued files dated in the past. When the newest activity is older than
- *  STALE_AFTER_DAYS, shift every activity timestamp by the same offset so the
- *  newest one lands on today. Re-running it is a no-op (offset ≈ 0). */
+ *  queued files dated in the past. Staleness is measured on the shipped demo
+ *  records only — a test login that writes an audit row today must not make a
+ *  February dataset look current. */
 const STALE_AFTER_DAYS = 45;
 
 function rebaseIfStale(store: Store): { store: Store; changed: boolean } {
-  const dataset = {
-    applications: store.applications,
-    announcements: store.announcements,
-    tickets: store.tickets,
-    audit: store.audit
-  };
-  const stamps = collectDates(dataset);
-  if (!stamps.length) return { store, changed: false };
+  const anchors = demoAnchors(store);
+  if (!anchors.length) return { store, changed: false };
 
-  const newest = Math.max(...stamps);
+  const newest = Math.max(...anchors);
   const ageDays = (Date.now() - newest) / 86_400_000;
   if (ageDays <= STALE_AFTER_DAYS) return { store, changed: false };
 
-  const delta = demoDateOffset(dataset);
+  const delta = demoAnchorOffset(store);
   if (delta <= 0) return { store, changed: false };
 
   const year = new Date().getFullYear();
   const seedAnn = seedAnnouncementText();
+  /* Anything already newer than the newest seed record is live activity from
+     this session (a draft opened today, an audit row from a test login): keep
+     it where it is instead of pushing it into the future. */
+  const cutoff = newest;
   return {
     changed: true,
     store: {
       ...store,
-      applications: shiftDates(store.applications, delta).map((app) => ({
+      applications: shiftDates(store.applications, delta, cutoff).map((app) => ({
         ...app,
         registerNo: app.registerNo.replace(/(PNJ-KUI\/)\d{4}(\/)/, `$1${year}$2`)
       })),
       /* Demo announcements are editorial copy, not user data: take the current
          wording (dates inside the text would otherwise stay stale) but keep the
          rebased publish timestamps and the admin's pinned/edited state. */
-      announcements: shiftDates(store.announcements, delta).map((a) => {
+      announcements: shiftDates(store.announcements, delta, cutoff).map((a) => {
         const fresh = seedAnn.get(a.id);
         return fresh ? { ...fresh, publishedAt: a.publishedAt, pinned: a.pinned } : a;
       }),
-      tickets: shiftDates(store.tickets, delta),
-      audit: shiftDates(store.audit, delta),
+      tickets: shiftDates(store.tickets, delta, cutoff),
+      audit: shiftDates(store.audit, delta, cutoff),
       /* The banner is seeded editorial copy too: refresh wording when it still
          carries an absolute date, but never overwrite an admin's own edit. */
       settings: /\b20\d{2}\b/.test(store.settings.announcementBanner ?? "")
