@@ -18,10 +18,34 @@ Dibangun sesuai `PROMPT.md`, `PRD.md`, dan `DESIGN.md`, dengan template visual m
 ```bash
 npm install
 npm run dev        # http://localhost:3210
-npm run build && npm start
+npm run build && npm start   # produksi, port dari PORT (default 3210)
 npm run typecheck  # tsc --noEmit
-npm test           # 31 unit test
+npm test           # 34 unit test
 ```
+
+## Deploy
+
+**Docker (disarankan)**
+
+```bash
+docker compose up -d --build     # http://<host>:3000
+docker compose logs -f portal
+docker compose down              # data demo tetap tersimpan di volume portal-data
+```
+
+Port host diatur di `docker-compose.yml` (`"3000:3000"`). Aplikasi membaca
+`PORT` dari environment; jangan mengubah `-p` di skrip karena tidak ada lagi.
+
+**Tanpa Docker**
+
+```bash
+npm ci && npm run build
+PORT=3000 npm start              # atau tanpa PORT -> 3210
+```
+
+**Catatan data:** pengajuan disimpan di `.data/store.json`. Di Docker folder itu
+sudah dipasang sebagai named volume. Tanpa volume, seluruh data demo hilang
+setiap container dibuat ulang — untuk presentasi ini penting.
 
 ## Akun demo (tombol masuk cepat di /login)
 

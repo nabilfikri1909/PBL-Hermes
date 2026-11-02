@@ -1,8 +1,17 @@
 node_modules
 .next
 .git
+.gitignore
 .data
 .server.log
+*.log
+npm-debug.log*
 preview-*.png
-*.jpg
-*.png
+*.tmp
+OneDrive_2026-10-20
+DEMO.md
+tsconfig.tsbuildinfo
+
+# public/ holds the KUI logo, campus photos and blanko PDFs: keep it.
+!public
+!public/**
