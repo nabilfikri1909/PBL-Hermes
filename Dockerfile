@@ -32,6 +32,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+
+# Demo store lives on disk; the runtime user must be able to write it.
+RUN mkdir -p /app/.data && chown -R nextjs:nodejs /app/.data
 
 USER nextjs
 EXPOSE 3000
