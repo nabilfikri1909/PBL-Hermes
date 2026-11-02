@@ -80,7 +80,10 @@ export function Counter({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement | null>(null);
-  const [value, setValue] = useState(0);
+  /* Render the final figure on the server and in the first paint, then
+     animate down-to-up only once the element is actually observed. A slow
+     script or a failed observer must never leave a "0" on screen. */
+  const [value, setValue] = useState(to);
   const started = useRef(false);
 
   useEffect(() => {
@@ -94,17 +97,18 @@ export function Counter({
 
     const run = () => {
       const start = performance.now();
+      setValue(0);
       const tick = (now: number) => {
         const progress = Math.min(1, (now - start) / duration);
         const eased = 1 - Math.pow(1 - progress, 3);
         setValue(to * eased);
         if (progress < 1) requestAnimationFrame(tick);
+        else setValue(to);
       };
       requestAnimationFrame(tick);
     };
 
     if (typeof IntersectionObserver === "undefined") {
-      run();
       return;
     }
     const observer = new IntersectionObserver((entries) => {

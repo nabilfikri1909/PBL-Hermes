@@ -192,7 +192,10 @@ export function ApplicationForm({
     const missing = requiredKeys.filter((key) => !(values[key] ?? "").trim());
     const noDocs = def.docs.filter((slot) => slot.required && !docs.find((d) => d.slot === slot.slot && d.fileName));
     if (missing.length || noDocs.length) {
-      toast.error(`Lengkapi ${missing.length} kolom wajib dan ${noDocs.length} dokumen sebelum mengirim.`);
+      const parts: string[] = [];
+      if (missing.length) parts.push(`${missing.length} kolom wajib`);
+      if (noDocs.length) parts.push(`${noDocs.length} dokumen wajib`);
+      toast.error(`Lengkapi ${parts.join(" dan ")} sebelum mengirim.`);
       return;
     }
 
@@ -377,6 +380,18 @@ export function ApplicationForm({
                           onChange={(event) => {
                             const file = event.target.files?.[0];
                             if (!file) return;
+                            const allowed = [".pdf", ".jpg", ".jpeg", ".png"];
+                            const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+                            if (!allowed.includes(ext)) {
+                              toast.error("Format berkas harus PDF, JPG, atau PNG.");
+                              event.target.value = "";
+                              return;
+                            }
+                            if (file.size > 10 * 1024 * 1024) {
+                              toast.error("Ukuran berkas maksimal 10 MB.");
+                              event.target.value = "";
+                              return;
+                            }
                             setDocs((prev) =>
                               prev.map((d) =>
                                 d.slot === doc.slot

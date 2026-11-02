@@ -42,15 +42,84 @@ const DATA_FILE = path.join(DATA_DIR, "store.json");
 /** globalThis survives HMR in dev and route-module isolation in prod. */
 const globalRef = globalThis as unknown as { __pnjStore?: Store };
 
+/* ── Demo-date rebasing ────────────────────────────────────────
+   The seed is authored with fixed timestamps. A demo shown months
+   later must not render a stale queue and an empty chart, so every
+   seed date is shifted by one offset that lands the newest seed
+   activity on today. The relative spacing of all records is kept. */
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z)?$/;
+
+/** Only activity timestamps anchor the demo clock. Planned dates
+ *  (`startDate`, `endDate`) describe the future by design and must not
+ *  drag the whole dataset backwards. */
+const ACTIVITY_KEYS = new Set(["createdAt", "updatedAt", "submittedAt", "publishedAt", "at", "uploadedAt", "validatedAt"]);
+
+function collectDates(value: unknown, out: number[] = [], key = ""): number[] {
+  if (typeof value === "string") {
+    if (ACTIVITY_KEYS.has(key) && ISO_DATE.test(value)) {
+      const t = new Date(value).getTime();
+      if (!Number.isNaN(t)) out.push(t);
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((v) => collectDates(v, out, key));
+  } else if (value && typeof value === "object") {
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) collectDates(v, out, k);
+  }
+  return out;
+}
+
+function shiftDates<T>(value: T, deltaMs: number): T {
+  if (typeof value === "string") {
+    if (!ISO_DATE.test(value)) return value;
+    const original = new Date(value);
+    if (Number.isNaN(original.getTime())) return value;
+    const shifted = new Date(original.getTime() + deltaMs);
+    // Date-only strings stay date-only; timestamps keep their time-of-day.
+    return (value.includes("T") ? shifted.toISOString() : shifted.toISOString().slice(0, 10)) as unknown as T;
+  }
+  if (Array.isArray(value)) return value.map((v) => shiftDates(v, deltaMs)) as unknown as T;
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = shiftDates(v, deltaMs);
+    return out as unknown as T;
+  }
+  return value;
+}
+
+/** Offset that places the newest seed record on today (midday). */
+function demoDateOffset(dataset: unknown): number {
+  const stamps = collectDates(dataset);
+  if (!stamps.length) return 0;
+  const newest = Math.max(...stamps);
+  const target = new Date();
+  target.setHours(12, 0, 0, 0);
+  return target.getTime() - newest;
+}
+
 function emptyStore(): Store {
+  const raw = {
+    applications: SEED_APPLICATIONS,
+    audit: SEED_AUDIT,
+    announcements: SEED_ANNOUNCEMENTS,
+    tickets: SEED_TICKETS
+  };
+  const delta = demoDateOffset(raw);
+  const year = new Date().getFullYear();
+  const applications = shiftDates(SEED_APPLICATIONS.map((app) => ({ ...app })), delta).map((app) => ({
+    ...app,
+    // Register numbers carry the year they were issued in; keep them consistent
+    // with the rebased dates instead of a hard-coded 2026.
+    registerNo: app.registerNo.replace(/(PNJ-KUI\/)\d{4}(\/)/, `$1${year}$2`)
+  }));
   return {
     users: [],
-    applications: SEED_APPLICATIONS.map((app) => ({ ...app })),
-    audit: [...SEED_AUDIT],
+    applications,
+    audit: shiftDates([...SEED_AUDIT], delta),
     faqs: [...SEED_FAQS],
-    announcements: [...SEED_ANNOUNCEMENTS],
+    announcements: shiftDates([...SEED_ANNOUNCEMENTS], delta),
     templates: [...SEED_TEMPLATES],
-    tickets: [...SEED_TICKETS],
+    tickets: shiftDates([...SEED_TICKETS], delta),
     settings: { ...SEED_SETTINGS }
   };
 }

@@ -1,4 +1,8 @@
-/** Verified Unsplash photo ids used across the portal. */
+/** Photo library used across the portal.
+ *
+ *  Files are served from `public/photos/` so a presentation or an offline
+ *  demo never depends on an external CDN being reachable.
+ */
 export const PHOTOS = {
   studentsLinear: "1523240795612-9a054b0db644",
   classroom: "1524178232363-1fb2b075b655",
@@ -19,7 +23,6 @@ export const PHOTOS = {
   notes: "1517245386807-bb43f82c33c4"
 } as const;
 
-export function photo(id: string, width = 800, height?: number) {
-  const size = height ? `&w=${width}&h=${height}` : `&w=${width}`;
-  return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80${size}`;
+export function photo(id: string, _width = 800, _height?: number) {
+  return `/photos/${id}.jpg`;
 }

@@ -64,7 +64,7 @@ export const SEED_ANNOUNCEMENTS: Announcement[] = [
     id: "ann_1",
     title: "Pendaftaran IISMA 2026 Gelombang II Dibuka",
     excerpt:
-      "KUI PNJ membuka pendampingan berkas IISMA gelombang kedua mulai 4 Februari 2026. Kuota pendampingan 40 mahasiswa.",
+      "KUI PNJ membuka pendampingan berkas IISMA gelombang kedua. Kuota pendampingan 40 mahasiswa.",
     body:
       "Pendampingan berkas IISMA 2026 gelombang II dibuka untuk seluruh mahasiswa aktif semester 4–6. Siapkan LoA/unconditional offer, transkrip, dan sertifikat bahasa. Seluruh berkas diunggah melalui portal Outbound.",
     publishedAt: "2026-02-04T02:00:00.000Z",
@@ -75,16 +75,16 @@ export const SEED_ANNOUNCEMENTS: Announcement[] = [
     id: "ann_2",
     title: "Permensesneg No. 5/2017: Perubahan Format SPTJM",
     excerpt:
-      "Mulai 1 Maret 2026 seluruh pengajuan PDLN wajib melampirkan SPTJM versi terbaru yang dihasilkan sistem.",
+      "Seluruh pengajuan PDLN wajib melampirkan SPTJM versi terbaru yang dihasilkan sistem.",
     body:
-      "Format SPTJM terbaru menambahkan kolom pertanggungjawaban biaya per peserta. Berkas lama masih diterima hingga 28 Februari 2026.",
+      "Format SPTJM terbaru menambahkan kolom pertanggungjawaban biaya per peserta. Berkas lama masih diterima selama masa transisi satu bulan sejak pengumuman ini terbit.",
     publishedAt: "2026-01-28T03:30:00.000Z",
     pinned: false,
     tag: "Regulasi"
   },
   {
     id: "ann_3",
-    title: "Kunjungan Balasan Lund University, 12–16 Mei 2026",
+    title: "Kunjungan Balasan Lund University ke Kampus PNJ",
     excerpt:
       "Delegasi Lund University akan melakukan kunjungan balasan ke kampus PNJ Depok. Sesi kuliah tamu terbuka untuk 120 mahasiswa.",
     body:
@@ -139,7 +139,7 @@ export const SEED_SETTINGS: StoreSettings = {
   openPdln: true,
   verificationSlaDays: 3,
   announcementBanner:
-    "Pendampingan berkas IISMA 2026 gelombang II dibuka — batas unggah 28 Februari 2026."
+    "Pendampingan berkas IISMA gelombang II dibuka. Batas unggah mengikuti pengumuman resmi KUI."
 };
 
 export const SEED_AUDIT: AuditEntry[] = [
