@@ -132,14 +132,14 @@ export function nowISO() {
   return new Date().toISOString();
 }
 
-function readFromDisk(): Store | null {
+function readFromDisk(): { store: Store; migrated: boolean } | null {
   try {
     if (!fs.existsSync(DATA_FILE)) return null;
     const raw = fs.readFileSync(DATA_FILE, "utf8");
     if (!raw.trim()) return null;
     const parsed = JSON.parse(raw) as Partial<Store>;
     const base = emptyStore();
-    return {
+    const store: Store = {
       users: parsed.users ?? base.users,
       applications: parsed.applications ?? base.applications,
       audit: parsed.audit ?? base.audit,
@@ -149,17 +149,60 @@ function readFromDisk(): Store | null {
       tickets: parsed.tickets ?? base.tickets,
       settings: { ...base.settings, ...(parsed.settings ?? {}) }
     };
+    const rebased = rebaseIfStale(store);
+    return { store: rebased.store, migrated: rebased.changed };
   } catch {
     return null;
   }
 }
 
+/** A store written months ago makes the demo look abandoned: empty chart,
+ *  queued files dated in the past. When the newest activity is older than
+ *  STALE_AFTER_DAYS, shift every activity timestamp by the same offset so the
+ *  newest one lands on today. Re-running it is a no-op (offset ≈ 0). */
+const STALE_AFTER_DAYS = 45;
+
+function rebaseIfStale(store: Store): { store: Store; changed: boolean } {
+  const dataset = {
+    applications: store.applications,
+    announcements: store.announcements,
+    tickets: store.tickets,
+    audit: store.audit
+  };
+  const stamps = collectDates(dataset);
+  if (!stamps.length) return { store, changed: false };
+
+  const newest = Math.max(...stamps);
+  const ageDays = (Date.now() - newest) / 86_400_000;
+  if (ageDays <= STALE_AFTER_DAYS) return { store, changed: false };
+
+  const delta = demoDateOffset(dataset);
+  if (delta <= 0) return { store, changed: false };
+
+  const year = new Date().getFullYear();
+  return {
+    changed: true,
+    store: {
+      ...store,
+      applications: shiftDates(store.applications, delta).map((app) => ({
+        ...app,
+        registerNo: app.registerNo.replace(/(PNJ-KUI\/)\d{4}(\/)/, `$1${year}$2`)
+      })),
+      announcements: shiftDates(store.announcements, delta),
+      tickets: shiftDates(store.tickets, delta),
+      audit: shiftDates(store.audit, delta)
+    }
+  };
+}
+
 export function getStore(): Store {
   if (!globalRef.__pnjStore) {
-    globalRef.__pnjStore = readFromDisk() ?? emptyStore();
-    // Seed demo accounts once so the live demo is always reachable.
-    if (globalRef.__pnjStore.users.length === 0) {
-      globalRef.__pnjStore.users = demoUsers();
+    const fromDisk = readFromDisk();
+    globalRef.__pnjStore = fromDisk?.store ?? emptyStore();
+    // Persist when seeding accounts or when the demo dates were rebased,
+    // so the correction sticks across restarts.
+    if (globalRef.__pnjStore.users.length === 0 || fromDisk?.migrated) {
+      if (globalRef.__pnjStore.users.length === 0) globalRef.__pnjStore.users = demoUsers();
       persist();
     }
   }
