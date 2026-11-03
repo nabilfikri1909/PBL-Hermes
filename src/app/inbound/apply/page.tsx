@@ -4,6 +4,11 @@ import { ApplyPage } from "@/components/apply-page";
 export const metadata: Metadata = { title: "Inbound Application" };
 export const dynamic = "force-dynamic";
 
-export default function ApplyInboundPage() {
-  return <ApplyPage service="inbound" />;
+export default async function ApplyInboundPage({
+  searchParams
+}: {
+  searchParams: Promise<{ baru?: string }>;
+}) {
+  const params = await searchParams;
+  return <ApplyPage service="inbound" startNew={params.baru === "1"} />;
 }

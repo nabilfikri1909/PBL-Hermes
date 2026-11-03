@@ -4,6 +4,11 @@ import { ApplyPage } from "@/components/apply-page";
 export const metadata: Metadata = { title: "Formulir Pengajuan Outbound" };
 export const dynamic = "force-dynamic";
 
-export default function ApplyOutboundPage() {
-  return <ApplyPage service="outbound" />;
+export default async function ApplyOutboundPage({
+  searchParams
+}: {
+  searchParams: Promise<{ baru?: string }>;
+}) {
+  const params = await searchParams;
+  return <ApplyPage service="outbound" startNew={params.baru === "1"} />;
 }

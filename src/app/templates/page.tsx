@@ -24,7 +24,7 @@ export default function TemplatesPage() {
       <PageBand
         eyebrow="Repositori dokumen"
         title="Blanko resmi & format KUI"
-        description="Unduh blanko asli untuk pengisian manual, atau gunakan portal agar nomor register, stempel digital, dan QR verifikasi tercetak otomatis."
+        description="Blanko yang diterbitkan KUI untuk Anda unduh dan dicetak. Dokumen ini bukan berkas yang perlu Anda unggah saat mengajukan; berkas pendukung (LoA, transkrip, sertifikat bahasa) diunggah di formulir layanan masing-masing."
         crumb={[{ href: "/templates", label: "Blanko" }]}
       />
 

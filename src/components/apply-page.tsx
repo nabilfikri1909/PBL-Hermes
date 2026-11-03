@@ -10,7 +10,7 @@ import { FORM_DEFS } from "@/lib/forms";
 import { isServiceAllowedForEmail, SERVICE_META } from "@/lib/utils";
 import type { ServiceKind } from "@/lib/types";
 
-export async function ApplyPage({ service }: { service: ServiceKind }) {
+export async function ApplyPage({ service, startNew = false }: { service: ServiceKind; startNew?: boolean }) {
   const user = await getSessionUser();
   if (!user) redirect(`/login?next=${SERVICE_META[service].href}/apply`);
 
@@ -53,9 +53,11 @@ export async function ApplyPage({ service }: { service: ServiceKind }) {
   }
 
   const existing =
-    getStore().applications.find(
-      (a) => a.ownerId === user.id && a.service === service && (a.status === "draft" || a.status === "revision_required")
-    ) ?? null;
+    startNew
+      ? null
+      : getStore().applications.find(
+          (a) => a.ownerId === user.id && a.service === service && (a.status === "draft" || a.status === "revision_required")
+        ) ?? null;
   const def = FORM_DEFS[service];
 
   return (
@@ -74,10 +76,19 @@ export async function ApplyPage({ service }: { service: ServiceKind }) {
               Kembali ke informasi layanan
             </Link>
             {existing ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[0.75rem] font-medium text-ink-soft">
-                <ShieldCheck className="size-3.5 text-forest-700" />
-                Melanjutkan draf {existing.registerNo || "yang belum terkirim"}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-[0.75rem] font-medium text-ink-soft">
+                  <ShieldCheck className="size-3.5 text-forest-700" />
+                  Melanjutkan draf {existing.registerNo || "yang belum terkirim"}
+                </span>
+                <Link
+                  href={`${SERVICE_META[service].href}/apply?baru=1`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-forest-900 px-3 py-1.5 text-[0.75rem] font-semibold text-white transition-colors hover:bg-forest-800"
+                >
+                  Mulai pengajuan baru
+                  <ArrowUpRight className="size-3.5" />
+                </Link>
+              </div>
             ) : null}
           </div>
 

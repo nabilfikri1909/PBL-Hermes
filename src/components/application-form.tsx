@@ -344,6 +344,23 @@ export function ApplicationForm({
 
             {current.id === "documents" ? (
               <div className="space-y-3">
+                <div className="rounded-card border border-hairline bg-white p-4">
+                  <p className="text-[0.8125rem] font-semibold text-ink">Berkas yang Anda unggah sendiri</p>
+                  <p className="mt-1 text-[0.75rem] leading-relaxed text-ink-mute">
+                    Dokumen di bawah berasal dari institusi mitra, kampus asal, atau Anda pribadi (LoA, transkrip,
+                    sertifikat bahasa). Ini berbeda dengan{" "}
+                    <a href="/templates" className="font-semibold text-forest-800 underline decoration-forest-300 underline-offset-2 hover:text-forest-900">
+                      blanko resmi KUI
+                    </a>{" "}
+                    yang diterbitkan kantor dan tinggal diunduh.
+                  </p>
+                  {existing ? (
+                    <p className="mt-2.5 rounded-md bg-canvas-soft px-3 py-2 text-[0.75rem] leading-relaxed text-ink-soft">
+                      Berkas yang sudah terisi berasal dari pengajuan <strong>{existing.registerNo || "draf tersimpan"}</strong>{" "}
+                      yang Anda lanjutkan. Hapus berkas dengan tombol silang bila ingin mengunggah yang baru.
+                    </p>
+                  ) : null}
+                </div>
                 {docs.map((doc) => {
                   const slot = def.docs.find((d) => d.slot === doc.slot);
                   return (
