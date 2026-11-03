@@ -30,7 +30,7 @@ export default async function AdminSettingsPage() {
               ["Kuota Outbound", settings.quotaOutbound],
               ["Kuota Inbound", settings.quotaInbound],
               ["Kuota PDLN", settings.quotaPdln],
-              ["SLA verifikasi (hari)", settings.verificationSlaDays],
+              ["Target verifikasi internal (hari)", settings.verificationSlaDays],
               ["Outbound dibuka", settings.openOutbound ? "Ya" : "Tidak"],
               ["Inbound dibuka", settings.openInbound ? "Ya" : "Tidak"],
               ["PDLN dibuka", settings.openPdln ? "Ya" : "Tidak"],

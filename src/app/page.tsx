@@ -150,9 +150,9 @@ export default async function LandingPage() {
               </div>
               <div>
                 <dd className="text-xl sm:text-2xl font-bold text-white">
-                  <Counter to={store.settings.verificationSlaDays} suffix=" hari" />
+                  <Counter to={3} suffix=" Layanan" />
                 </dd>
-                <dt className="mt-1 text-[0.6875rem] sm:text-[0.8125rem] leading-snug text-mint-200/90">SLA verifikasi KUI</dt>
+                <dt className="mt-1 text-[0.6875rem] sm:text-[0.8125rem] leading-snug text-mint-200/90">Outbound, Inbound & PDLN</dt>
               </div>
             </dl>
           </div>
@@ -347,10 +347,10 @@ export default async function LandingPage() {
               icon: GraduationCap
             },
             {
-              value: 3,
-              suffix: " Hari",
-              label: "SLA Verifikasi Dokumen KUI",
-              sub: "Penerbitan surat rekomendasi resmi dan rekomendasi izin Setneg",
+              value: 9,
+              suffix: " Blanko",
+              label: "Blanko Dokumen Resmi",
+              sub: "Format surat KUI siap unduh dan cetak, terhubung ke data pengajuan",
               icon: ShieldCheck
             }
           ].map((stat, i) => {
@@ -465,8 +465,8 @@ export default async function LandingPage() {
               <div>
                 <h2 className="display-section text-ink">Ajukan hari ini, surat rekomendasi siap dipratinjau hari ini juga.</h2>
                 <p className="mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-ink-mute">
-                  Masuk dengan akun demo bila ingin mencoba seluruh alur tanpa data pribadi. Verifikator KUI memproses
-                  berkas pada hari kerja sesuai SLA {store.settings.verificationSlaDays} hari.
+                  Masuk dengan akun demo bila ingin mencoba seluruh alur tanpa data pribadi. Status berkas diperbarui
+                  setiap kali verifikator KUI mengambil keputusan, dan catatannya langsung terlihat di dashboard Anda.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
                   <BtnLink href="/pengajuan" size="lg">

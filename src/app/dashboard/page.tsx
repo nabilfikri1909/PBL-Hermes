@@ -18,7 +18,6 @@ export default async function DashboardPage() {
 
   const all = listApplications();
   const mine = all.filter((a) => a.ownerId === user.id);
-  const settings = getStore().settings;
   const announcements = getStore().announcements.slice(0, 3);
 
   const rows: ListRow[] = mine.map((a) => ({
@@ -50,7 +49,7 @@ export default async function DashboardPage() {
       user={{ fullName: user.fullName, email: user.email, role: user.role, department: user.department }}
       area="student"
       title={`Selamat datang, ${user.fullName.split(" ")[0]}`}
-      subtitle={`${user.department} · ${user.nim ?? "NIM belum diisi"}. SLA verifikasi KUI ${settings.verificationSlaDays} hari kerja.`}
+      subtitle={`${user.department} · ${user.nim ?? "NIM belum diisi"}. Pantau status berkas dan catatan verifikator di halaman ini.`}
     >
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((metric) => {

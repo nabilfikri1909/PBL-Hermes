@@ -274,13 +274,13 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
     { key: "quotaOutbound", label: "Kuota Outbound", hint: "Jumlah maksimum pengajuan outbound per tahun" },
     { key: "quotaInbound", label: "Kuota Inbound", hint: "Jumlah maksimum peserta asing per tahun" },
     { key: "quotaPdln", label: "Kuota PDLN", hint: "Jumlah izin dinas luar negeri per tahun" },
-    { key: "verificationSlaDays", label: "SLA verifikasi (hari)", hint: "Target hari kerja penyelesaian verifikasi" }
+    { key: "verificationSlaDays", label: "Target verifikasi internal (hari)", hint: "Patokan hari kerja internal; belum dipublikasikan sebagai SLA ke pemohon" }
   ];
 
   return (
     <form onSubmit={save} className="space-y-5">
       <div className="rounded-card-lg bg-white p-5 shadow-[0_16px_40px_-38px_rgb(13_26_21_/_0.5)]">
-        <p className="text-[0.9375rem] font-bold text-ink">Kuota & SLA</p>
+        <p className="text-[0.9375rem] font-bold text-ink">Kuota & Target Layanan</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {numbers.map((item) => (
             <div key={item.key}>
